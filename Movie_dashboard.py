@@ -99,24 +99,11 @@ fig_3d = px.scatter_3d(
 )
 
 # Improve visuals
-fig_3d.update_traces(marker=dict(size=4))
+fig_3d.update_traces(marker=dict(size=5))
 fig_3d.update_layout(width=900, height=700)
 
 # Show in Streamlit
 st.plotly_chart(fig_3d)
-# Smaller markers for clarity
-fig_pca.update_traces(marker=dict(size=5, line=dict(width=0)))
-
-# Improve layout
-fig_pca.update_layout(
-    width=900,
-    height=600,
-    legend_title="Cluster",
-    plot_bgcolor='white',
-    title_font_size=20,
-    font=dict(size=12)
-)
-st.plotly_chart(fig_pca)
 
 # Top tags overall
 st.subheader("🏷️ Top Tags Used")
