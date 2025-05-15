@@ -64,37 +64,46 @@ top_genres.columns = ["Genre", "Count"]
 fig2 = px.bar(top_genres, x="Genre", y="Count", title="Top Genres in Cluster")
 st.plotly_chart(fig2)
 
-# 🧠 PCA Visualization of Clusters
-st.subheader("📊 PCA Visualization of Movie Clusters")
+# 🧠 PCA 3D Visualization of Clusters
+st.subheader("🧠 3D PCA Visualization of Movie Clusters")
 
-# Prepare clustering features for PCA
+# 📌 Show cluster distribution
+st.markdown("#### Cluster Distribution (Count)")
+cluster_counts = df["cluster"].value_counts().sort_index()
+st.write(cluster_counts)
+
+# Prepare features
 features = df.drop(columns=["userId", "title", "tag", "genres", "rating"])
-features = features.select_dtypes(include=[np.number])  # keep only numerical features
-
-# Fill NA and standardize
+features = features.select_dtypes(include=[np.number])
 features.fillna(0, inplace=True)
+
+# Standardize
 scaler = StandardScaler()
-X_cluster_scaled = scaler.fit_transform(features)
+X_scaled = scaler.fit_transform(features)
 
-# Apply PCA
-pca = PCA(n_components=2)
-X_pca = pca.fit_transform(X_cluster_scaled)
+# Apply 3D PCA
+pca = PCA(n_components=3)
+X_pca = pca.fit_transform(X_scaled)
 
-# Create PCA DataFrame
-pca_df = pd.DataFrame(X_pca, columns=['PC1', 'PC2'])
+# Create DataFrame for plotting
+pca_df = pd.DataFrame(X_pca, columns=['PC1', 'PC2', 'PC3'])
+pca_df['Cluster'] = df["cluster"].astype(str)  # Treat clusters as categorical
 
-# Convert cluster to string so Plotly treats it as categorical
-pca_df['Cluster'] = df["cluster"].astype(str)
-
-# Interactive plot
-fig_pca = px.scatter(
-    pca_df, x='PC1', y='PC2', color='Cluster',
-    title='PCA Visualization of Movie Clusters (K=5)',
-    labels={'PC1': 'PC1', 'PC2': 'PC2'},
+# 3D Scatter plot
+fig_3d = px.scatter_3d(
+    pca_df, x='PC1', y='PC2', z='PC3', color='Cluster',
+    title=f'3D PCA Visualization of Movie Clusters (K={cluster_counts.count()})',
     color_discrete_sequence=px.colors.qualitative.Set3,
-    opacity=0.6,  # Make overlapping points transparent
+    opacity=0.6,
+    labels={'PC1': 'Principal Component 1', 'PC2': 'Principal Component 2', 'PC3': 'Principal Component 3'}
 )
 
+# Improve visuals
+fig_3d.update_traces(marker=dict(size=4))
+fig_3d.update_layout(width=900, height=700)
+
+# Show in Streamlit
+st.plotly_chart(fig_3d)
 # Smaller markers for clarity
 fig_pca.update_traces(marker=dict(size=5, line=dict(width=0)))
 
