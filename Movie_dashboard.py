@@ -89,7 +89,7 @@ pca_df['Cluster'] = df["cluster"].astype(str)
 # Interactive plot
 fig_pca = px.scatter(
     pca_df, x='PC1', y='PC2', color='Cluster',
-    title='PCA Visualization of Movie Clusters (K=4)',
+    title='PCA Visualization of Movie Clusters (K=5)',
     labels={'PC1': 'Principal Component 1', 'PC2': 'Principal Component 2'},
     color_discrete_sequence=px.colors.qualitative.Set2,
     opacity=0.6,  # Make overlapping points transparent
