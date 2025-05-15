@@ -82,7 +82,9 @@ X_pca = pca.fit_transform(X_cluster_scaled)
 
 # Create PCA DataFrame
 pca_df = pd.DataFrame(X_pca, columns=['PC1', 'PC2'])
-pca_df['Cluster'] = df["cluster"].values
+
+# Convert cluster to string so Plotly treats it as categorical
+pca_df['Cluster'] = df["cluster"].astype(str)
 
 # Interactive plot
 fig_pca = px.scatter(
