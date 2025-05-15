@@ -64,46 +64,6 @@ top_genres.columns = ["Genre", "Count"]
 fig2 = px.bar(top_genres, x="Genre", y="Count", title="Top Genres in Cluster")
 st.plotly_chart(fig2)
 
-# 🧠 PCA 3D Visualization of Clusters
-st.subheader("🧠 3D PCA Visualization of Movie Clusters")
-
-# 📌 Show cluster distribution
-st.markdown("#### Cluster Distribution (Count)")
-cluster_counts = df["cluster"].value_counts().sort_index()
-st.write(cluster_counts)
-
-# Prepare features
-features = df.drop(columns=["userId", "title", "tag", "genres", "rating"])
-features = features.select_dtypes(include=[np.number])
-features.fillna(0, inplace=True)
-
-# Standardize
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(features)
-
-# Apply 3D PCA
-pca = PCA(n_components=3)
-X_pca = pca.fit_transform(X_scaled)
-
-# Create DataFrame for plotting
-pca_df = pd.DataFrame(X_pca, columns=['PC1', 'PC2', 'PC3'])
-pca_df['Cluster'] = df["cluster"].astype(str)  # Treat clusters as categorical
-
-# 3D Scatter plot
-fig_3d = px.scatter_3d(
-    pca_df, x='PC1', y='PC2', z='PC3', color='Cluster',
-    title=f'3D PCA Visualization of Movie Clusters (K={cluster_counts.count()})',
-    color_discrete_sequence=px.colors.qualitative.Set3,
-    opacity=0.6,
-    labels={'PC1': 'Principal Component 1', 'PC2': 'Principal Component 2', 'PC3': 'Principal Component 3'}
-)
-
-# Improve visuals
-fig_3d.update_traces(marker=dict(size=5))
-fig_3d.update_layout(width=900, height=700)
-
-# Show in Streamlit
-st.plotly_chart(fig_3d)
 
 # Top tags overall
 st.subheader("🏷️ Top Tags Used")
