@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import os
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 st.title("🎬 Movie Recommendation Dashboard (Ages 18–35)")
 st.markdown("Explore user behavior, movie clusters, and personalized suggestions with ML-powered insights.")
@@ -10,22 +12,18 @@ st.markdown("Explore user behavior, movie clusters, and personalized suggestions
 # Load data with caching
 @st.cache_data
 def load_data():
-    if not os.path.exists("full_merged_cleaned.csv"):
-        st.error("The file 'full_merged_cleaned.csv' was not found.")
+    file_path = "full_merged_cleaned_with_clusters.csv"
+    if not os.path.exists(file_path):
+        st.error(f"The file '{file_path}' was not found.")
         st.stop()
 
-    df = pd.read_csv("full_merged_cleaned.csv")
+    df = pd.read_csv(file_path)
 
     # Fix genres: convert string to list safely
     if "genres" in df.columns:
         df["genres"] = df["genres"].astype(str).apply(
             lambda x: [genre.strip() for genre in x.split(',')] if ',' in x else [x]
         )
-
-    # Add dummy cluster column if missing
-    if "cluster" not in df.columns:
-        st.warning("Column 'cluster' is missing. Adding dummy clusters for testing.")
-        df["cluster"] = np.random.randint(0, 5, size=len(df))
 
     return df
 
@@ -65,6 +63,35 @@ top_genres = genres_flat.value_counts().nlargest(10).reset_index()
 top_genres.columns = ["Genre", "Count"]
 fig2 = px.bar(top_genres, x="Genre", y="Count", title="Top Genres in Cluster")
 st.plotly_chart(fig2)
+
+# 🧠 PCA Visualization of Clusters
+st.subheader("📊 PCA Visualization of Movie Clusters")
+
+# Prepare clustering features for PCA
+features = df.drop(columns=["userId", "title", "tag", "genres", "rating"])
+features = features.select_dtypes(include=[np.number])  # keep only numerical features
+
+# Fill NA and standardize
+features.fillna(0, inplace=True)
+scaler = StandardScaler()
+X_cluster_scaled = scaler.fit_transform(features)
+
+# Apply PCA
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_cluster_scaled)
+
+# Create PCA DataFrame
+pca_df = pd.DataFrame(X_pca, columns=['PC1', 'PC2'])
+pca_df['Cluster'] = df["cluster"].values
+
+# Interactive plot
+fig_pca = px.scatter(
+    pca_df, x='PC1', y='PC2', color='Cluster',
+    title='PCA Visualization of Movie Clusters (K=4)',
+    labels={'PC1': 'Principal Component 1', 'PC2': 'Principal Component 2'},
+    color_continuous_scale='Set2'
+)
+st.plotly_chart(fig_pca)
 
 # Top tags overall
 st.subheader("🏷️ Top Tags Used")
