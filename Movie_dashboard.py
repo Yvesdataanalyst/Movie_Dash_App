@@ -3,8 +3,6 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import os
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
 
 st.title("🎬 Movie Recommendation Dashboard (Ages 18–35)")
 st.markdown("Explore user behavior, movie clusters, and personalized suggestions with ML-powered insights.")
@@ -63,7 +61,6 @@ top_genres = genres_flat.value_counts().nlargest(10).reset_index()
 top_genres.columns = ["Genre", "Count"]
 fig2 = px.bar(top_genres, x="Genre", y="Count", title="Top Genres in Cluster")
 st.plotly_chart(fig2)
-
 
 # Top tags overall
 st.subheader("🏷️ Top Tags Used")
