@@ -89,7 +89,7 @@ fig_pca = px.scatter(
     pca_df, x='PC1', y='PC2', color='Cluster',
     title='PCA Visualization of Movie Clusters (K=4)',
     labels={'PC1': 'Principal Component 1', 'PC2': 'Principal Component 2'},
-    color_continuous_scale='Set2'
+    color_discrete_sequence=px.colors.qualitative.Set2  # ✅ categorical palette
 )
 st.plotly_chart(fig_pca)
 
