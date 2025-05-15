@@ -91,7 +91,21 @@ fig_pca = px.scatter(
     pca_df, x='PC1', y='PC2', color='Cluster',
     title='PCA Visualization of Movie Clusters (K=4)',
     labels={'PC1': 'Principal Component 1', 'PC2': 'Principal Component 2'},
-    color_discrete_sequence=px.colors.qualitative.Set2  # ✅ categorical palette
+    color_discrete_sequence=px.colors.qualitative.Set2,
+    opacity=0.6,  # Make overlapping points transparent
+)
+
+# Smaller markers for clarity
+fig_pca.update_traces(marker=dict(size=5, line=dict(width=0)))
+
+# Improve layout
+fig_pca.update_layout(
+    width=900,
+    height=600,
+    legend_title="Cluster",
+    plot_bgcolor='white',
+    title_font_size=20,
+    font=dict(size=12)
 )
 st.plotly_chart(fig_pca)
 
